@@ -2,6 +2,7 @@ GoDaddy DynDns
 ==============
 
 [![License](http://img.shields.io/badge/license-mit-blue.svg?style=flat-square)](https://raw.githubusercontent.com/sestus/godyndns/master/LICENSE)
+[![Build status](https://travis-ci.com/sestus/godyndns.svg?branch=master)](https://travis-ci.com/github/sestus/godyndns)
 
 
 godaddy-dyndns is a simple utility that is basically a DIY dynamic DNS. It checks the current public IP against a
