@@ -8,6 +8,12 @@ GoDaddy DynDns
 godaddy-dyndns is a simple utility that is basically a DIY dynamic DNS. It checks the current public IP against a
 [GoDaddy](https://godaddy.com) subdomain and,  if they don't match, it updates the subdomain to point to the new IP address.
 
+Installation
+------------
+
+Grab the latest release binaries for your OS-architecture from the latest [release](https://github.com/sestus/godyndns/releases).
+
+
 Usage
 -----
 
