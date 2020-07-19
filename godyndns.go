@@ -79,6 +79,10 @@ func GetGodaddyARecordIp(client *http.Client, domainName string, apiKey, secretK
 		log.Printf("Failed to decode the response body. %s", err)
 		return nil, err
 	}
+	if len(record) == 0 {
+		log.Printf("Couldn't get info on the domain : %s. Do we own that domain?", domainName)
+		return nil, errors.New("invalid domain")
+	}
 	ip := net.ParseIP(record[0].Data)
 	if ip == nil {
 		return ip, fmt.Errorf("couldn't parse %s to an IP address", record[0].Data)

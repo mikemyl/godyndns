@@ -45,7 +45,7 @@ func main() {
 		}
 		domainIp, err := godyndns.GetGodaddyARecordIp(client, argv.SubDomain, argv.ApiKey, argv.SecretKey)
 		if err != nil {
-			log.Fatalf("Failed to get the GoDaddy A Record : %e. Exiting..", err)
+			log.Fatalf("Failed to get the GoDaddy A Record : %s.", err)
 		}
 		if ip.Equal(domainIp) {
 			log.Printf("%s is already pointing to %s. Won't update..", argv.SubDomain, domainIp)
