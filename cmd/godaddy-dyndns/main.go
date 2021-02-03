@@ -10,7 +10,6 @@ import (
 	"os"
 )
 
-
 type argT struct {
 	cli.Helper
 	ApiKey    string `cli:"api-key" usage:"GoDaddy Api Key" dft:"$GODADDY_API_KEY"`
@@ -30,7 +29,6 @@ func (argv *argT) Validate(ctx *cli.Context) error {
 	}
 	return nil
 }
-
 
 func main() {
 	boldTitle := color.Bold("godaddy-dyndns")
@@ -60,4 +58,3 @@ func main() {
 	}, desc))
 
 }
-

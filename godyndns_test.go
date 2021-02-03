@@ -39,9 +39,9 @@ func TestGetGodaddyARecordIp(t *testing.T) {
 		secretKey  string
 	}
 	tests := []struct {
-		name string
-		args args
-		want net.IP
+		name     string
+		args     args
+		want     net.IP
 		hasError bool
 	}{
 		{"Should parse the ip from the JSON", args{mockHttpClient(200, "200 OK", `[{"data":"1.1.1.1","name":"some.domain.com","ttl":600,"type":"A"}]`), "some.domain.com", "apiKey", "secretKey"}, net.ParseIP("1.1.1.1"), false},
@@ -54,7 +54,7 @@ func TestGetGodaddyARecordIp(t *testing.T) {
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GetGodaddyARecordIp() = %v, want %v", got, tt.want)
 			}
-			if (tt.hasError && err == nil) || (!tt.hasError && err != nil ) {
+			if (tt.hasError && err == nil) || (!tt.hasError && err != nil) {
 				t.Errorf("GetGodaddyARecordIp() err = %e , while wanted error : %v", err, tt.hasError)
 			}
 		})
@@ -70,8 +70,8 @@ func TestUpdateGoDaddyARecord(t *testing.T) {
 		secretKey  string
 	}
 	tests := []struct {
-		name string
-		args args
+		name     string
+		args     args
 		hasError bool
 	}{
 		{"Should return err if nil IP is given", args{mockHttpClient(0, "ignored", `[]`), "some.domain.com", nil, "apiKey", "secretKey"}, true},
@@ -104,11 +104,11 @@ func Test_addHeaders(t *testing.T) {
 
 func Test_constructUrl_AddsSchemeAndCreatesUrl(t *testing.T) {
 	tests := []struct {
-		name string
-		domainInput string
+		name            string
+		domainInput     string
 		wantedSubDomain string
-		wantedDomain string
-		wantError bool
+		wantedDomain    string
+		wantError       bool
 	}{
 		{"Simple domain", "foo.bar.com", "foo", "bar.com", false},
 		{"Domain starting with https://", "https://foo.bar.com", "foo", "bar.com", false},
@@ -127,13 +127,12 @@ func Test_constructUrl_AddsSchemeAndCreatesUrl(t *testing.T) {
 				if tt.wantError {
 					t.Errorf("wanted an error but didn't get one")
 				}
-				assertEqual(t, tt.wantedDomain, url.Domain + "." + url.TLD)
+				assertEqual(t, tt.wantedDomain, url.Domain+"."+url.TLD)
 				assertEqual(t, tt.wantedSubDomain, url.Subdomain)
 			}
 		})
 	}
 }
-
 
 type HttpTransportFunc func(req *http.Request) *http.Response
 

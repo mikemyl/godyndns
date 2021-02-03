@@ -22,7 +22,7 @@ type domain struct {
 
 type domainUpdate struct {
 	Data string `json:"data"`
-	Ttl int 	`json:"ttl"`
+	Ttl  int    `json:"ttl"`
 }
 
 type domainUpdates []domainUpdate
@@ -42,7 +42,7 @@ func GetPublicIp(client *http.Client) (net.IP, error) {
 
 }
 
-func UpdateGoDaddyARecord(client *http.Client, domainName string, publicIp net.IP,  apiKey, secretKey string) error {
+func UpdateGoDaddyARecord(client *http.Client, domainName string, publicIp net.IP, apiKey, secretKey string) error {
 	if publicIp == nil {
 		log.Println("Given publicIp is nll")
 		return errors.New("given publicIp is nll")
@@ -54,7 +54,7 @@ func UpdateGoDaddyARecord(client *http.Client, domainName string, publicIp net.I
 	}
 
 	url := fmt.Sprintf("%s/%s.%s/records/A/%s", domainsPath, domainUrl.Domain, domainUrl.TLD, domainUrl.Subdomain)
-	record, _:= json.Marshal(domainUpdates{domainUpdate{publicIp.String(), 600}})
+	record, _ := json.Marshal(domainUpdates{domainUpdate{publicIp.String(), 600}})
 	req, _ := http.NewRequest(http.MethodPut, url, bytes.NewBuffer(record))
 	addHeaders(req, apiKey, secretKey)
 	_, err = doRequest(client, req)
