@@ -44,9 +44,9 @@ func TestGetGodaddyARecordIp(t *testing.T) {
 		want net.IP
 		hasError bool
 	}{
-		{"Should parse the ip from the JSON", args{mockHttpClient(200, "200 OK", `[{"data":"1.1.1.1","name":"some.domain.com","ttl":600,"type":"A"}]`), "domainName", "apiKey", "secretKey"}, net.ParseIP("1.1.1.1"), false},
-		{"Should return nil if non valid ip is returned", args{mockHttpClient(200, "200 OK", `[{"data":"invalid","name":"some.domain.com","ttl":600,"type":"A"}]`), "domainName", "apiKey", "secretKey"}, nil, true},
-		{"Should return nil non 200 status code is returned", args{mockHttpClient(401, "401 Unauthorized", ``), "domainName", "apiKey", "secretKey"}, nil, true},
+		{"Should parse the ip from the JSON", args{mockHttpClient(200, "200 OK", `[{"data":"1.1.1.1","name":"some.domain.com","ttl":600,"type":"A"}]`), "some.domain.com", "apiKey", "secretKey"}, net.ParseIP("1.1.1.1"), false},
+		{"Should return nil if non valid ip is returned", args{mockHttpClient(200, "200 OK", `[{"data":"invalid","name":"some.domain.com","ttl":600,"type":"A"}]`), "some.domain.com", "apiKey", "secretKey"}, nil, true},
+		{"Should return nil non 200 status code is returned", args{mockHttpClient(401, "401 Unauthorized", ``), "some.domain.com", "apiKey", "secretKey"}, nil, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -74,9 +74,9 @@ func TestUpdateGoDaddyARecord(t *testing.T) {
 		args args
 		hasError bool
 	}{
-		{"Should return err if nil IP is given", args{mockHttpClient(0, "ignored", `[]`), "domainName", nil, "apiKey", "secretKey"}, true},
-		{"Should return err if non 200 http status code", args{mockHttpClient(404, "404 Bad request", `[]`), "domainName", nil, "apiKey", "secretKey"}, true},
-		{"Shouldn't return err if valid request", args{mockHttpClient(200, "200 OK", `ignored`), "domainName", net.ParseIP("1.1.1.1"), "apiKey", "secretKey"}, false},
+		{"Should return err if nil IP is given", args{mockHttpClient(0, "ignored", `[]`), "some.domain.com", nil, "apiKey", "secretKey"}, true},
+		{"Should return err if non 200 http status code", args{mockHttpClient(404, "404 Bad request", `[]`), "some.domain.com", nil, "apiKey", "secretKey"}, true},
+		{"Shouldn't return err if valid request", args{mockHttpClient(200, "200 OK", `ignored`), "some.domain.com", net.ParseIP("1.1.1.1"), "apiKey", "secretKey"}, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -100,6 +100,38 @@ func Test_addHeaders(t *testing.T) {
 	assertEqual(t, "application/json", got.Header.Get("Content-Type"))
 	assertEqual(t, "application/json", got.Header.Get("Content-Encoding"))
 	assertEqual(t, "sso-key foo:bar", got.Header.Get("Authorization"))
+}
+
+func Test_constructUrl_AddsSchemeAndCreatesUrl(t *testing.T) {
+	tests := []struct {
+		name string
+		domainInput string
+		wantedSubDomain string
+		wantedDomain string
+		wantError bool
+	}{
+		{"Simple domain", "foo.bar.com", "foo", "bar.com", false},
+		{"Domain starting with https://", "https://foo.bar.com", "foo", "bar.com", false},
+		{"co.uk doamin", "https://foo.bar.co.uk", "foo", "bar.co.uk", false},
+		{"No subdomain", "nosubdomain.io", "", "", true},
+		{"No domain", "invalid-domain", "", "", true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			url, err := constructUrl(tt.domainInput)
+			if err != nil {
+				if !tt.wantError {
+					t.Errorf("construnctUrl returned an error unexpectedly")
+				}
+			} else {
+				if tt.wantError {
+					t.Errorf("wanted an error but didn't get one")
+				}
+				assertEqual(t, tt.wantedDomain, url.Domain + "." + url.TLD)
+				assertEqual(t, tt.wantedSubDomain, url.Subdomain)
+			}
+		})
+	}
 }
 
 
@@ -133,5 +165,5 @@ func assertEqual(t *testing.T, expected interface{}, actual interface{}) {
 	if expected == actual {
 		return
 	}
-	t.Errorf("Received %v (type %v), expected %v (type %v)", expected, reflect.TypeOf(expected), actual, reflect.TypeOf(actual))
+	t.Errorf("Received %v (type %v), expected %v (type %v)", actual, reflect.TypeOf(actual), expected, reflect.TypeOf(expected))
 }

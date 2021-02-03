@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/jpillora/go-tld"
 	"io/ioutil"
 	"log"
 	"net"
@@ -46,18 +47,28 @@ func UpdateGoDaddyARecord(client *http.Client, domainName string, publicIp net.I
 		log.Println("Given publicIp is nll")
 		return errors.New("given publicIp is nll")
 	}
-	url := fmt.Sprintf("%s/mikemylonakis.com/records/A/%s", domainsPath, domainName)
+	domainUrl, err := constructUrl(domainName)
+	if err != nil {
+		log.Printf("Failed to update the A record as I couldn't extract the domain from %s\n", domainName)
+		return err
+	}
+
+	url := fmt.Sprintf("%s/%s.%s/records/A/%s", domainsPath, domainUrl.Domain, domainUrl.TLD, domainUrl.Subdomain)
 	record, _:= json.Marshal(domainUpdates{domainUpdate{publicIp.String(), 600}})
 	req, _ := http.NewRequest(http.MethodPut, url, bytes.NewBuffer(record))
 	addHeaders(req, apiKey, secretKey)
-	_, err := doRequest(client, req)
+	_, err = doRequest(client, req)
 	return err
-
 }
 
 func GetGodaddyARecordIp(client *http.Client, domainName string, apiKey, secretKey string) (net.IP, error) {
-	url := fmt.Sprintf("%s/mikemylonakis.com/records/A/%s", domainsPath, domainName)
-	req, err := http.NewRequest(http.MethodGet, url, nil)
+	domainUrl, err := constructUrl(domainName)
+	if err != nil {
+		log.Printf("Failed to get A record as I couldn't extract the domain from %s\n", domainName)
+		return nil, err
+	}
+	targetUrl := fmt.Sprintf("%s/%s.%s/records/A/%s", domainsPath, domainUrl.Domain, domainUrl.TLD, domainUrl.Subdomain)
+	req, err := http.NewRequest(http.MethodGet, targetUrl, nil)
 	if err != nil {
 		log.Printf("Failed to get the record details for domain %s : %s", domainName, err)
 		return nil, err
@@ -88,6 +99,28 @@ func GetGodaddyARecordIp(client *http.Client, domainName string, apiKey, secretK
 		return ip, fmt.Errorf("couldn't parse %s to an IP address", record[0].Data)
 	}
 	return net.ParseIP(record[0].Data), nil
+}
+
+func constructUrl(subdomain string) (*tld.URL, error) {
+	u, err := tld.Parse(subdomain)
+	if err != nil {
+		log.Printf("Couldn't construct domain from %s : %s", subdomain, err)
+		return nil, err
+	}
+	if !u.ICANN {
+		u, err = tld.Parse("https://" + subdomain)
+		if err != nil {
+			log.Printf("Couldn't construct domain from %s : %s", subdomain, err)
+			return nil, err
+		}
+	}
+	if len(u.Domain) == 0 || len(u.TLD) == 0 {
+		return nil, errors.New("Couldn't extract domain from " + subdomain)
+	}
+	if len(u.Subdomain) == 0 {
+		return nil, errors.New("Couldn't extract subdomain from " + subdomain)
+	}
+	return u, nil
 }
 
 func addHeaders(r *http.Request, apiKey, secretKey string) *http.Request {
