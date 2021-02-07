@@ -45,6 +45,9 @@ func TestGetGodaddyARecordIp(t *testing.T) {
 		hasError bool
 	}{
 		{"Should parse the ip from the JSON", args{mockHTTPClient(200, "200 OK", `[{"data":"1.1.1.1","name":"some.domain.com","ttl":600,"type":"A"}]`), "some.domain.com", "apiKey", "secretKey"}, net.ParseIP("1.1.1.1"), false},
+		{"Should return nil if invalid json returned", args{mockHTTPClient(200, "200 OK", `[foo]`), "some.domain.com", "apiKey", "secretKey"}, nil, true},
+		{"Should return nil if empty json", args{mockHTTPClient(200, "200 OK", `[]`), "some.domain.com", "apiKey", "secretKey"}, nil, true},
+		{"Should return nil if invalid subdomain given", args{mockHTTPClient(200, "200 OK", `[{"data":"1.1.1.1","name":"some.domain.com","ttl":600,"type":"A"}]`), "invalid", "apiKey", "secretKey"}, nil, true},
 		{"Should return nil if non valid ip is returned", args{mockHTTPClient(200, "200 OK", `[{"data":"invalid","name":"some.domain.com","ttl":600,"type":"A"}]`), "some.domain.com", "apiKey", "secretKey"}, nil, true},
 		{"Should return nil non 200 status code is returned", args{mockHTTPClient(401, "401 Unauthorized", ``), "some.domain.com", "apiKey", "secretKey"}, nil, true},
 	}
@@ -76,6 +79,7 @@ func TestUpdateGoDaddyARecord(t *testing.T) {
 	}{
 		{"Should return err if nil IP is given", args{mockHTTPClient(0, "ignored", `[]`), "some.domain.com", nil, "apiKey", "secretKey"}, true},
 		{"Should return err if non 200 http status code", args{mockHTTPClient(404, "404 Bad request", `[]`), "some.domain.com", nil, "apiKey", "secretKey"}, true},
+		{"Should return err if invalid subdomain given", args{mockHTTPClient(200, "200 OK", `[]`), "invalid", net.ParseIP("1.1.1.1"), "apiKey", "secretKey"}, true},
 		{"Shouldn't return err if valid request", args{mockHTTPClient(200, "200 OK", `ignored`), "some.domain.com", net.ParseIP("1.1.1.1"), "apiKey", "secretKey"}, false},
 	}
 	for _, tt := range tests {
@@ -115,6 +119,7 @@ func Test_constructUrl_AddsSchemeAndCreatesUrl(t *testing.T) {
 		{"co.uk doamin", "https://foo.bar.co.uk", "foo", "bar.co.uk", false},
 		{"No subdomain", "nosubdomain.io", "", "", true},
 		{"No domain", "invalid-domain", "", "", true},
+		{"Invalid domain", "|#!$%", "", "", true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

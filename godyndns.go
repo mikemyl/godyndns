@@ -121,9 +121,6 @@ func constructURL(subdomain string) (*tld.URL, error) {
 			return nil, err
 		}
 	}
-	if len(u.Domain) == 0 || len(u.TLD) == 0 {
-		return nil, errors.New("Couldn't extract domain from " + subdomain)
-	}
 	if len(u.Subdomain) == 0 {
 		return nil, errors.New("Couldn't extract subdomain from " + subdomain)
 	}
