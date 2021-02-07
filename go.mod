@@ -10,5 +10,6 @@ require (
 	github.com/mkideal/cli v0.0.5
 	github.com/mkideal/pkg v0.0.0-20170503154153-3e188c9e7ecc // indirect
 	github.com/stretchr/testify v1.6.1 // indirect
-	golang.org/x/crypto v0.0.0-20200604202706-70a84ac30bf9 // indirect
+	golang.org/x/lint v0.0.0-20201208152925-83fdc39ff7b5 // indirect
+	golang.org/x/tools v0.1.0 // indirect
 )

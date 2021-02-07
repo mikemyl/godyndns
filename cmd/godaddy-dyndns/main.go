@@ -37,11 +37,11 @@ func main() {
 	os.Exit(cli.Run(new(argT), func(ctx *cli.Context) error {
 		argv := ctx.Argv().(*argT)
 		client := &http.Client{}
-		ip, err := godyndns.GetPublicIp(client)
+		ip, err := godyndns.GetPublicIP(client)
 		if err != nil {
 			log.Fatalf("Failed to get my public IP address : %e. Exiting..", err)
 		}
-		domainIp, err := godyndns.GetGodaddyARecordIp(client, argv.SubDomain, argv.ApiKey, argv.SecretKey)
+		domainIp, err := godyndns.GetGodaddyARecordIP(client, argv.SubDomain, argv.ApiKey, argv.SecretKey)
 		if err != nil {
 			log.Fatalf("Failed to get the GoDaddy A Record : %s.", err)
 		}

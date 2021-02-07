@@ -6,5 +6,5 @@ import (
 )
 
 func main() {
-	godyndns.GetPublicIp(&http.Client{})
+	godyndns.GetPublicIP(&http.Client{})
 }
