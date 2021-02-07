@@ -29,6 +29,8 @@ type domainUpdates []domainUpdate
 
 const domainsPath = "https://api.godaddy.com/v1/domains"
 
+// GetPublicIp Gets the public ip of the current host, assuming that it can reach the internet
+// it accepts an *http.Client as a param mainly for testing purposes
 func GetPublicIp(client *http.Client) (net.IP, error) {
 	var ipResolvers = [3]string{"http://ipinfo.io/ip", "https://api.ipify.org?format=text", "https://checkip.amazonaws.com/api"}
 	for _, url := range ipResolvers {
@@ -42,6 +44,9 @@ func GetPublicIp(client *http.Client) (net.IP, error) {
 
 }
 
+// UpdateGoDaddyARecord updates the A record of a given GoDaddy subdomain if the public IP that it points to
+// is different compared to the publicIp parameter. The domainName param needs to look like : subdomain.domain.com.
+// The function will then make a REST api call on the domain.com and will update the subdomain with the publicIp
 func UpdateGoDaddyARecord(client *http.Client, domainName string, publicIp net.IP, apiKey, secretKey string) error {
 	if publicIp == nil {
 		log.Println("Given publicIp is nll")
@@ -61,6 +66,8 @@ func UpdateGoDaddyARecord(client *http.Client, domainName string, publicIp net.I
 	return err
 }
 
+// GetGodaddyARecordIp gets the A record associated with the domainName.  The domainName param needs to look like :
+// subdomain.domain.com . Upon successful retrieval, it returns the IP address associated with that subdomain
 func GetGodaddyARecordIp(client *http.Client, domainName string, apiKey, secretKey string) (net.IP, error) {
 	domainUrl, err := constructUrl(domainName)
 	if err != nil {
