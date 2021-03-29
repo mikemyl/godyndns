@@ -33,7 +33,7 @@ Options:
 Examples
 -------
 ```
-./godaddy-dyndns --api-key=my_godaddy_api_key --secret-key=my_godaddy_secret_key --subdomain=mysubdomain.mikemylonakis.com  # updates the mysubdomain subdomain of mikemylonakis.com
-./godaddy-dyndns --api-key=my_godaddy_api_key --secret-key=my_godaddy_secret_key --subdomain=@.mikemylonakis.com            # updates the root domain, i.e. mikemylonakis.com
-./godaddy-dyndns --api-key=my_godaddy_api_key --secret-key=my_godaddy_secret_key --subdomain=mikemylonakis.com              # updates the root domain, i.e  mikemylonakis.com
+./godaddy-dyndns --api-key=my_godaddy_api_key --secret-key=my_godaddy_secret_key --domain=mysubdomain.mikemylonakis.com  # updates the mysubdomain subdomain of mikemylonakis.com
+./godaddy-dyndns --api-key=my_godaddy_api_key --secret-key=my_godaddy_secret_key --domain=@.mikemylonakis.com            # updates the root domain, i.e. mikemylonakis.com
+./godaddy-dyndns --api-key=my_godaddy_api_key --secret-key=my_godaddy_secret_key --domain=mikemylonakis.com                   # updates the root domain, i.e  mikemylonakis.com
 ```
