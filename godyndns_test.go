@@ -117,7 +117,8 @@ func Test_constructUrl_AddsSchemeAndCreatesUrl(t *testing.T) {
 		{"Simple domain", "foo.bar.com", "foo", "bar.com", false},
 		{"Domain starting with https://", "https://foo.bar.com", "foo", "bar.com", false},
 		{"co.uk doamin", "https://foo.bar.co.uk", "foo", "bar.co.uk", false},
-		{"No subdomain", "nosubdomain.io", "", "", true},
+		{"No subdomain", "nosubdomain.io", "@", "nosubdomain.io", false},
+		{"@ subdomain", "@.nosubdomain.io", "@", "nosubdomain.io", false},
 		{"No domain", "invalid-domain", "", "", true},
 		{"Invalid domain", "|#!$%", "", "", true},
 	}
@@ -141,8 +142,9 @@ func Test_constructUrl_AddsSchemeAndCreatesUrl(t *testing.T) {
 
 type HTTPTransportFunc func(req *http.Request) *http.Response
 
-func (fn HTTPTransportFunc) RoundTrip(req *http.Request) (*http.Response, error) {
-	return fn(req), nil
+
+func (fn HTTPTransportFunc) RoundTrip(request *http.Request) (*http.Response, error) {
+	return fn(request), nil
 }
 
 func mockHTTPClient(code int, status, body string) *http.Client {

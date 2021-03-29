@@ -44,9 +44,9 @@ func GetPublicIP(client *http.Client) (net.IP, error) {
 
 }
 
-// UpdateGoDaddyARecord updates the A record of a given GoDaddy subdomain if the public IP that it points to
+// UpdateGoDaddyARecord updates the A record of a given GoDaddy domain if the public IP that it points to
 // is different compared to the publicIP parameter. The domainName param needs to look like : subdomain.domain.com.
-// The function will then make a REST api call on the domain.com and will update the subdomain with the publicIP
+// The function will then make a REST api call on the domain.com and will update the domain with the publicIP
 func UpdateGoDaddyARecord(client *http.Client, domainName string, publicIP net.IP, apiKey, secretKey string) error {
 	if publicIP == nil {
 		log.Println("Given publicIP is nll")
@@ -67,7 +67,7 @@ func UpdateGoDaddyARecord(client *http.Client, domainName string, publicIP net.I
 }
 
 // GetGodaddyARecordIP gets the A record associated with the domainName.  The domainName param needs to look like :
-// subdomain.domain.com . Upon successful retrieval, it returns the IP address associated with that subdomain
+// subdomain.domain.com . Upon successful retrieval, it returns the IP address associated with that domain
 func GetGodaddyARecordIP(client *http.Client, domainName string, apiKey, secretKey string) (net.IP, error) {
 	domainURL, err := constructURL(domainName)
 	if err != nil {
@@ -108,21 +108,26 @@ func GetGodaddyARecordIP(client *http.Client, domainName string, apiKey, secretK
 	return net.ParseIP(record[0].Data), nil
 }
 
-func constructURL(subdomain string) (*tld.URL, error) {
-	u, err := tld.Parse(subdomain)
+func constructURL(domain string) (*tld.URL, error) {
+	u, err := tld.Parse(domain)
 	if err != nil {
-		log.Printf("Couldn't construct domain from %s : %s", subdomain, err)
+		log.Printf("Couldn't construct domain from %s : %s", domain, err)
 		return nil, err
 	}
 	if !u.ICANN {
-		u, err = tld.Parse("https://" + subdomain)
+		u, err = tld.Parse("https://" + domain)
 		if err != nil {
-			log.Printf("Couldn't construct domain from %s : %s", subdomain, err)
-			return nil, err
+			if strings.Contains(err.Error(), "empty label in domain") && domain[0] == '@' {
+				u, err = tld.Parse("https://" +  domain[2:])
+			}
+			if err != nil {
+				log.Printf("Couldn't construct domain from %s : %s", domain, err)
+				return nil, err
+			}
 		}
 	}
 	if len(u.Subdomain) == 0 {
-		return nil, errors.New("Couldn't extract subdomain from " + subdomain)
+		u.Subdomain = "@"
 	}
 	return u, nil
 }

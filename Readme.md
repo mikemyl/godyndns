@@ -7,7 +7,7 @@ GoDaddy DynDns
 
 
 godaddy-dyndns is a simple utility that is basically a DIY dynamic DNS. It checks the current public IP against a
-[GoDaddy](https://godaddy.com) subdomain and,  if they don't match, it updates the subdomain to point to the new IP address.
+[GoDaddy](https://godaddy.com) domain and,  if they don't match, it updates the domain to point to the new IP address.
 
 Installation
 ------------
@@ -27,12 +27,13 @@ Options:
   -h, --help                               display help information
       --api-key[=$GODADDY_API_KEY]         GoDaddy Api Key
       --secret-key[=$GODADDY_SECRET_KEY]   GoDaddy Secret Key
-      --subdomain[=$GODADDY_SUBDOMAIN]     GoDaddy SubDomain to update. If the subdomain doesn't exist it creates it
-
+      --domain[=$GODADDY_DOMAIN]           GoDaddy SubDomain to update. If the subdomain doesn't exist it creates it
 ```
 
-Example
+Examples
 -------
 ```
-./godaddy-dyndns --api-key=my_godaddy_api_key --secret-key=my_godaddy_secret_key --subdomain=mysubdomain.mikemylonakis.com
+./godaddy-dyndns --api-key=my_godaddy_api_key --secret-key=my_godaddy_secret_key --subdomain=mysubdomain.mikemylonakis.com  # updates the mysubdomain subdomain of mikemylonakis.com
+./godaddy-dyndns --api-key=my_godaddy_api_key --secret-key=my_godaddy_secret_key --subdomain=@.mikemylonakis.com            # updates the root domain, i.e. mikemylonakis.com
+./godaddy-dyndns --api-key=my_godaddy_api_key --secret-key=my_godaddy_secret_key --subdomain=mikemylonakis.com              # updates the root domain, i.e  mikemylonakis.com
 ```
