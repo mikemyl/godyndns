@@ -142,7 +142,6 @@ func Test_constructUrl_AddsSchemeAndCreatesUrl(t *testing.T) {
 
 type HTTPTransportFunc func(req *http.Request) *http.Response
 
-
 func (fn HTTPTransportFunc) RoundTrip(request *http.Request) (*http.Response, error) {
 	return fn(request), nil
 }

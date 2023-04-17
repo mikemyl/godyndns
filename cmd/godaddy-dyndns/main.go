@@ -14,7 +14,7 @@ type argT struct {
 	cli.Helper
 	ApiKey    string `cli:"api-key" usage:"GoDaddy Api Key" dft:"$GODADDY_API_KEY"`
 	SecretKey string `cli:"secret-key" usage:"GoDaddy Secret Key" dft:"$GODADDY_SECRET_KEY"`
-	Domain string `cli:"domain" usage:"GoDaddy Domain to update. If the domain doesn't exist it creates it" dft:"$GODADDY_DOMAIN"`
+	Domain    string `cli:"domain" usage:"GoDaddy Domain to update. If the domain doesn't exist it creates it" dft:"$GODADDY_DOMAIN"`
 }
 
 func (argv *argT) Validate(ctx *cli.Context) error {

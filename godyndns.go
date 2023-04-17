@@ -118,7 +118,7 @@ func constructURL(domain string) (*tld.URL, error) {
 		u, err = tld.Parse("https://" + domain)
 		if err != nil {
 			if strings.Contains(err.Error(), "empty label in domain") && domain[0] == '@' {
-				u, err = tld.Parse("https://" +  domain[2:])
+				u, err = tld.Parse("https://" + domain[2:])
 			}
 			if err != nil {
 				log.Printf("Couldn't construct domain from %s : %s", domain, err)
