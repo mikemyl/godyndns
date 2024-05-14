@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@master
 
       - name: attach release artifacts
-        uses: sestus/golang-attach-release-artifacts-action@v1
+        uses: mikemyl/golang-attach-release-artifacts-action@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           go_files: 'cmd/godaddy-dyndns/main.go cmd/public-ip-getter/main.go'
